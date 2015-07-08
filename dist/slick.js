@@ -75,6 +75,25 @@ angular.module('slick', []).directive('slick', [
                 index: index
               });
             };
+            slider.on('init', function (sl) {
+              if (attrs.onInit) {
+                scope.onInit();
+              }
+              if (currentIndex != null) {
+                return sl.slideHandler(currentIndex);
+              }
+            });
+            slider.on('afterChange', function (event, slick, currentSlide, nextSlide) {
+              if (scope.onAfterChange) {
+                scope.onAfterChange();
+              }
+              if (currentIndex != null) {
+                return scope.$apply(function () {
+                  currentIndex = currentSlide;
+                  return scope.currentIndex = currentSlide;
+                });
+              }
+            });
             slider.slick({
               accessibility: scope.accessibility !== 'false',
               adaptiveHeight: scope.adaptiveHeight === 'true',
@@ -115,25 +134,6 @@ angular.module('slick', []).directive('slick', [
               vertical: scope.vertical === 'true',
               prevArrow: scope.prevArrow ? $(scope.prevArrow) : void 0,
               nextArrow: scope.nextArrow ? $(scope.nextArrow) : void 0
-            });
-            slider.on('init', function (sl) {
-              if (attrs.onInit) {
-                scope.onInit();
-              }
-              if (currentIndex != null) {
-                return sl.slideHandler(currentIndex);
-              }
-            });
-            slider.on('afterChange', function (event, slick, currentSlide, nextSlide) {
-              if (scope.onAfterChange) {
-                scope.onAfterChange();
-              }
-              if (currentIndex != null) {
-                return scope.$apply(function () {
-                  currentIndex = currentSlide;
-                  return scope.currentIndex = currentSlide;
-                });
-              }
             });
             return scope.$watch('currentIndex', function (newVal, oldVal) {
               if (currentIndex != null && newVal != null && newVal !== currentIndex) {
